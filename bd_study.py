@@ -80,6 +80,7 @@ def add_data(conn, query):
 def remove_data(conn, query, id):
     
     cursor = conn.cursor()
+
     try:
         cursor.execute(query, (id,))
     except (Exception, psycopg2.DatabaseError) as error:
@@ -132,7 +133,7 @@ for item in result:
 
 arquivo = pd.read_csv('dados.csv', sep = ";")
 
-arquivo.to_parquet('dados.parquet')
+arquivo.to_parquet('dados.parquet', index = False)
 
 df = pd.read_parquet('dados.parquet', engine="fastparquet", index = False)
 
@@ -144,6 +145,8 @@ for item in df.columns:
 if (len(set(lista_pg).intersection(lista_parquet))) == len(lista_parquet) and len(lista_pg):
     
     df.to_sql(dw_table,engine, if_exists="append", index= False)
+    print("A")
 
 else:
     df.to_sql(dw_table,engine, if_exists="replace", index= False)
+    print('B')
