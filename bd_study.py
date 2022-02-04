@@ -1,3 +1,4 @@
+from audioop import add
 import psycopg2
 import pandas as pd
 
@@ -10,9 +11,9 @@ param = {
     "password": "admin"
 }
 
-
+'''Conexão com o BD'''
 def connect(param):
-    '''Realiza a conexão no Postgre'''
+    
     conn = None
     try:
         print('Conectando no servidor...')
@@ -25,9 +26,9 @@ def connect(param):
 
     return conn
 
-
+'''Converte o SELECT em um DF Pandas'''
 def pg_to_df(conn, query, column_names):
-    '''Converte o SELECT em um DF Pandas'''
+    
     cursor = conn.cursor()
     try:
         cursor.execute(query)
@@ -42,9 +43,9 @@ def pg_to_df(conn, query, column_names):
     df = pd.DataFrame(tupples, columns=column_names)
     return df
 
-
+'''Retorna todos os dados no formato de Tuplas'''
 def get_data(conn, query):
-    '''Retorna todos os dados no formato de Tuplas'''
+    
     cursor = conn.cursor()
     try:
         cursor.execute(query)
@@ -58,9 +59,9 @@ def get_data(conn, query):
 
     return tupples
 
-
+'''Insere dados no BD'''
 def insert_data(conn, query):
-    '''Insere dados no BD'''
+    
     cursor = conn.cursor()
     try:
         cursor.execute(query)
@@ -72,9 +73,9 @@ def insert_data(conn, query):
     conn.commit()
     cursor.close()
 
-
+'''Remove dados do BD '''
 def remove_data(conn, query, id):
-    '''Remove dados do BD '''
+    
     cursor = conn.cursor()
     try:
         cursor.execute(query, (id,))
@@ -86,29 +87,45 @@ def remove_data(conn, query, id):
     conn.commit()
     cursor.close()
 
+'''Adiciona uma coluna vazia ao BD Table '''
+def add_column(conn, query):
+    
+    cursor = conn.cursor()
+    try:
+        cursor.execute(query)
+    except (Exception, psycopg2.DatabaseError) as error:
+        print("Error: %s" % error)
+        cursor.close()
+        return 1
+
+    conn.commit()
+    cursor.close()
 
 conn = connect(param)
 
 conn.autocommit = True
 
-query1 = '''SELECT * FROM vendas'''
+'''Tests'''
 
-result = get_data(conn, query1)
+'''Add an empty column to DB Table'''
 
-print(result)
+# query1 = ''' ALTER TABLE vendas ADD COLUMN telefone VARCHAR '''
 
-query3 = ''' SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'vendas' '''
+# add_column(conn,query1)
 
-result = get_data(conn, query3)
+'''Get all data from DB'''
 
-print(result)
+# query1 = '''SELECT * FROM vendas'''
 
-query2 = ''' Delete from vendas where id = %s '''
+# result = get_data(conn, query1)
 
-remove_data(conn, query2, 1)
+# print(result)
 
-query1 = '''SELECT * FROM vendas'''
+'''Get column names from DB Table'''
 
-result = get_data(conn, query1)
+# query3 = ''' SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'vendas' '''
 
-print(result)
+# result = get_data(conn, query3)
+
+# print(result)
+
