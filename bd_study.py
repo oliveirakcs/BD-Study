@@ -1,4 +1,3 @@
-from audioop import add
 import psycopg2
 import pandas as pd
 from sqlalchemy import create_engine, engine
@@ -91,6 +90,7 @@ def remove_data(conn, query, id):
     conn.commit()
     cursor.close()
 
+
 conn = connect(param)
 
 conn.autocommit = True
@@ -119,14 +119,16 @@ conn.autocommit = True
 
 '''Retorna os nomes das colunas'''
 
-# query3 = ''' SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'vendas' '''
+query3 = ''' SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'vendas' '''
 
-# result = get_data(conn, query3)
+result = get_data(conn, query3)
 
-# for item in result:
+lista_pg = []
+lista_parquet = []
 
-#     print(item[0])
+for item in result:
 
+    lista_pg.append(item[0])
 
 arquivo = pd.read_csv('dados.csv', sep = ";")
 
@@ -134,11 +136,14 @@ arquivo.to_parquet('dados.parquet')
 
 df = pd.read_parquet('dados.parquet', engine="fastparquet", index = False)
 
-
-a = (df.columns[1])
-
-print(a)
-
 dw_table = 'vendas'
 
-df.to_sql(dw_table,engine, if_exists="append", index= False)
+for item in df.columns:
+    lista_parquet.append(item)
+
+if (len(set(lista_pg).intersection(lista_parquet))) == len(lista_parquet) and len(lista_pg):
+    
+    df.to_sql(dw_table,engine, if_exists="append", index= False)
+
+else:
+    df.to_sql(dw_table,engine, if_exists="replace", index= False)
