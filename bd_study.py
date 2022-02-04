@@ -1,6 +1,8 @@
 from audioop import add
 import psycopg2
 import pandas as pd
+from sqlalchemy import create_engine, engine
+
 
 # Parâmetros de conexão
 
@@ -10,6 +12,8 @@ param = {
     "user": "postgres",
     "password": "admin"
 }
+
+engine = create_engine('postgresql+psycopg2://postgres:admin@127.0.0.1:5432/TestDB')
 
 '''Conexão com o BD'''
 def connect(param):
@@ -43,7 +47,7 @@ def pg_to_df(conn, query, column_names):
     df = pd.DataFrame(tupples, columns=column_names)
     return df
 
-'''Retorna todos os dados no formato de Tuplas'''
+''' Input das queries no BD '''
 def get_data(conn, query):
     
     cursor = conn.cursor()
@@ -59,8 +63,8 @@ def get_data(conn, query):
 
     return tupples
 
-'''Insere dados no BD'''
-def insert_data(conn, query):
+'''Adiciona dados do BD '''
+def add_data(conn, query):
     
     cursor = conn.cursor()
     try:
@@ -87,33 +91,13 @@ def remove_data(conn, query, id):
     conn.commit()
     cursor.close()
 
-'''Adiciona uma coluna vazia ao BD Table '''
-def add_column(conn, query):
-    
-    cursor = conn.cursor()
-    try:
-        cursor.execute(query)
-    except (Exception, psycopg2.DatabaseError) as error:
-        print("Error: %s" % error)
-        cursor.close()
-        return 1
-
-    conn.commit()
-    cursor.close()
-
 conn = connect(param)
 
 conn.autocommit = True
 
 '''Tests'''
 
-'''Add an empty column to DB Table'''
-
-# query1 = ''' ALTER TABLE vendas ADD COLUMN telefone VARCHAR '''
-
-# add_column(conn,query1)
-
-'''Get all data from DB'''
+''' Checa dados da coluna '''
 
 # query1 = '''SELECT * FROM vendas'''
 
@@ -121,11 +105,40 @@ conn.autocommit = True
 
 # print(result)
 
-'''Get column names from DB Table'''
+''' Adiciona um usuário na tabela do BD '''
+
+# query2 = ''' INSERT INTO vendas (id, data, funcionario, vendas, dia_semana) VALUES (6,'04/02/2022', 'Gabriel', 12, 'domingo' ) '''
+
+# add_data(conn,query2)
+
+'''Adiciona uma coluna vazia no BD'''
+
+# query1 = ''' ALTER TABLE vendas ADD COLUMN telefone VARCHAR '''
+
+# add_column(conn,query1)
+
+'''Retorna os nomes das colunas'''
 
 # query3 = ''' SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'vendas' '''
 
 # result = get_data(conn, query3)
 
-# print(result)
+# for item in result:
 
+#     print(item[0])
+
+
+arquivo = pd.read_csv('dados.csv', sep = ";")
+
+arquivo.to_parquet('dados.parquet')
+
+df = pd.read_parquet('dados.parquet', engine="fastparquet", index = False)
+
+
+a = (df.columns[1])
+
+print(a)
+
+dw_table = 'vendas'
+
+df.to_sql(dw_table,engine, if_exists="append", index= False)
