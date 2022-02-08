@@ -1,6 +1,9 @@
+import logging
 import psycopg2
 import pandas as pd
+from socketio import PubSubManager
 from sqlalchemy import create_engine, engine
+from psycopg2.extras import LoggingConnection
 
 
 # Parâmetros de conexão
@@ -13,6 +16,9 @@ param = {
 }
 
 engine = create_engine('postgresql+psycopg2://postgres:admin@127.0.0.1:5432/TestDB')
+
+logging.basicConfig(level = logging.DEBUG)
+logger = logging.getLogger("loggerinformation")
 
 '''Conexão com o BD'''
 def connect(param):
@@ -92,7 +98,13 @@ def remove_data(conn, query, id):
     cursor.close()
 
 
-conn = connect(param)
+#conn = connect(param)
+# conn.inicialize(logger)
+
+conn = psycopg2.connect(connection_factory=LoggingConnection, **param)
+
+conn.initialize(logger)
+
 
 conn.autocommit = True
 
@@ -100,15 +112,15 @@ conn.autocommit = True
 
 ''' Checa dados da coluna '''
 
-# query1 = '''SELECT * FROM vendas'''
+query1 = '''SELECT * FROM vendas'''
 
-# result = get_data(conn, query1)
+result = get_data(conn, query1)
 
 # print(result)
 
 ''' Adiciona um usuário na tabela do BD '''
 
-# query2 = ''' INSERT INTO vendas (id, data, funcionario, vendas, dia_semana) VALUES (6,'04/02/2022', 'Gabriel', 12, 'domingo' ) '''
+# query2 = ''' INSERT INTO vendas (product_name, price, type, year) VALUES ('Moto',20000, 'CG', 2021 ) '''
 
 # add_data(conn,query2)
 

@@ -1,2 +1,3 @@
-﻿product_name;price;type;year
-A;120;new;2022
+﻿product_name;price;type;year;color
+A;120;new;2022;red
+B;200;used;1990;blue
