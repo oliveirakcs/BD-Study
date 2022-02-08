@@ -1,0 +1,25 @@
+
+2022-02-08 11:04:37,839 - loggerinformation - debug - b'select * from vendas'
+2022-02-08 11:04:37,870 - loggerinformation - debug - b" select column_name from information_schema.columns where table_name = 'vendas' "
+
+2022-02-08 11:04:59,294 - loggerinformation - debug - b'select * from vendas'
+2022-02-08 11:04:59,327 - loggerinformation - debug - b" select column_name from information_schema.columns where table_name = 'vendas' "
+
+2022-02-08 11:07:30,385 - loggerinformation - debug - b'select * from vendas'
+2022-02-08 11:07:30,403 - loggerinformation - debug - b" select column_name from information_schema.columns where table_name = 'vendas' "
+
+2022-02-08 11:07:50,796 - loggerinformation - debug - b'select * from vendas'
+2022-02-08 11:07:50,830 - loggerinformation - debug - b" select column_name from information_schema.columns where table_name = 'vendas' "
+
+2022-02-08 11:15:08,927 - loggerinformation - debug - b'select * from vendas'
+2022-02-08 11:15:08,961 - loggerinformation - debug - b" select column_name from information_schema.columns where table_name = 'vendas' "
+
+2022-02-08 11:15:38,044 - loggerinformation - debug - b'select * from vendas'
+2022-02-08 11:15:38,067 - loggerinformation - debug - b" select column_name from information_schema.columns where table_name = 'vendas' "
+
+2022-02-08 11:15:52,113 - loggerinformation - debug - b'select * from vendas'
+2022-02-08 11:15:52,143 - loggerinformation - debug - b" select column_name from information_schema.columns where table_name = 'vendas' "
+
+2022-02-08 15:00:02,076 - loggerinformation - debug - b'select * from vendas'
+2022-02-08 15:00:02,136 - loggerinformation - debug - b" select column_name from information_schema.columns where table_name = 'vendas' "
+

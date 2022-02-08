@@ -1,10 +1,14 @@
 import logging
+import traceback
 import psycopg2
 import pandas as pd
-from socketio import PubSubManager
 from sqlalchemy import create_engine, engine
 from psycopg2.extras import LoggingConnection
+import io
+from datetime import date
 
+
+data = str(date.today())+'.txt'
 
 # Parâmetros de conexão
 
@@ -15,14 +19,31 @@ param = {
     "password": "admin"
 }
 
-engine = create_engine('postgresql+psycopg2://postgres:admin@127.0.0.1:5432/TestDB')
+engine = create_engine(
+    'postgresql+psycopg2://postgres:admin@127.0.0.1:5432/TestDB')
 
-logging.basicConfig(level = logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger("loggerinformation")
 
+# TESTE
+
+log_capture_string = io.StringIO()
+ch = logging.StreamHandler(log_capture_string)
+ch.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+
+logger.addHandler(ch)
+
+# TESTE
+
 '''Conexão com o BD'''
+
+
 def connect(param):
-    
+
     conn = None
     try:
         print('Conectando no servidor...')
@@ -35,9 +56,12 @@ def connect(param):
 
     return conn
 
+
 '''Converte o SELECT em um DF Pandas'''
+
+
 def pg_to_df(conn, query, column_names):
-    
+
     cursor = conn.cursor()
     try:
         cursor.execute(query)
@@ -52,9 +76,12 @@ def pg_to_df(conn, query, column_names):
     df = pd.DataFrame(tupples, columns=column_names)
     return df
 
+
 ''' Input das queries no BD '''
+
+
 def get_data(conn, query):
-    
+
     cursor = conn.cursor()
     try:
         cursor.execute(query)
@@ -68,9 +95,12 @@ def get_data(conn, query):
 
     return tupples
 
+
 '''Adiciona dados do BD '''
+
+
 def add_data(conn, query):
-    
+
     cursor = conn.cursor()
     try:
         cursor.execute(query)
@@ -82,9 +112,12 @@ def add_data(conn, query):
     conn.commit()
     cursor.close()
 
+
 '''Remove dados do BD '''
+
+
 def remove_data(conn, query, id):
-    
+
     cursor = conn.cursor()
 
     try:
@@ -143,11 +176,11 @@ for item in result:
 
     lista_pg.append(item[0])
 
-arquivo = pd.read_csv('dados.csv', sep = ";")
+arquivo = pd.read_csv('dados.csv', sep=";")
 
-arquivo.to_parquet('dados.parquet', index = False)
+arquivo.to_parquet('dados.parquet', index=False)
 
-df = pd.read_parquet('dados.parquet', engine="fastparquet", index = False)
+df = pd.read_parquet('dados.parquet', engine="fastparquet", index=False)
 
 dw_table = 'vendas'
 
@@ -155,10 +188,17 @@ for item in df.columns:
     lista_parquet.append(item)
 
 if (len(set(lista_pg).intersection(lista_parquet))) == len(lista_parquet) and len(lista_pg):
-    
-    df.to_sql(dw_table,engine, if_exists="append", index= False)
+
+    df.to_sql(dw_table, engine, if_exists="append", index=False)
     print("A")
 
 else:
-    df.to_sql(dw_table,engine, if_exists="replace", index= False)
+    df.to_sql(dw_table, engine, if_exists="replace", index=False)
     print('B')
+
+log_contents = log_capture_string.getvalue()
+log_capture_string.close()
+
+with open(data, 'a+') as f:
+    f.write(log_contents.lower())
+    f.write('\n')
