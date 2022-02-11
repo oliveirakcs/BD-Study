@@ -130,10 +130,6 @@ def remove_data(conn, query, id):
     conn.commit()
     cursor.close()
 
-
-#conn = connect(param)
-# conn.inicialize(logger)
-
 conn = psycopg2.connect(connection_factory=LoggingConnection, **param)
 
 conn.initialize(logger)

@@ -1,0 +1,6 @@
+2022-02-11 13:53:03,119 - loggerinformation - debug - b'select * from vendas'
+2022-02-11 13:53:03,205 - loggerinformation - debug - b" select column_name from information_schema.columns where table_name = 'vendas' "
+
+2022-02-11 14:11:50,000 - loggerinformation - debug - b'select * from vendas'
+2022-02-11 14:11:50,051 - loggerinformation - debug - b" select column_name from information_schema.columns where table_name = 'vendas' "
+
